@@ -9,18 +9,21 @@ function changeSize(dontUpdateInputs){
         $("#sizeY").val(size[1]);
         $("#sizeZ").val(size[2]);
     }
+    $('#flythroughSlider>div').slider( "option", "max", size[2]-1);
     plane.scale.set(size[0]/100, size[1]/100, 1);
     getLayer();
 }
 
 function getLayer(){
+    if (reader.readyState == 1) return;//busy
     console.log("get");
-    var offset = (size[0]*size[1]*layerNumber + headerLength)*dataLength;
+    var offset = size[0]*size[1]*layerNumber*dataLength + headerLength;
     var length = size[0]*size[1]*dataLength;
-    if ((offset + length) >= currentFileSize){
+    if ((offset + length) > currentFileSize){
         console.warn("bad dimensions");
         return;
     }
+    lastLayerRequested = layerNumber;
     readChunk(offset, length);
 }
 
@@ -61,6 +64,12 @@ function initControls(){
         size[2] = val;
         changeSize(true);
     }, 1);
+
+    setSlider("#flythroughSlider>div", layerNumber, 0, size[2]-1, 1, function(val){
+        layerNumber = val;
+        $("#layerNumber").val(val);
+        getLayer();
+    });
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
@@ -119,7 +128,7 @@ function initControls(){
 
     function setSlider(id, val, min, max, incr, callback, callbackOnStop){
         var slider = $(id).slider({
-            orientation: 'horizontal',
+            orientation: 'vertical',
             range: false,
             value: val,
             min: min,

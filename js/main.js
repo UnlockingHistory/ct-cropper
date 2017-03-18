@@ -20,6 +20,7 @@ var threeView;
 
 
 var layerNumber = 0;
+var lastLayerRequested = 0;
 var size = [1,1,1];
 
 var reader = new FileReader();
@@ -35,6 +36,7 @@ function handleFileSelect(evt) {
     $("#currentFileName").html(currentFileName);
     $("#currentFileSize").html(numberWithCommas(currentFileSize));
     $("#fileInfo").show();
+    $("#flythroughSlider").show();
 
     readHeader();
 }
@@ -43,6 +45,7 @@ function chunkRead(e){
     if (e.target.error == null) {
         var data = new Uint8Array(e.target.result);
         showData(data);
+        if (lastLayerRequested != layerNumber) getLayer();
     } else {
         console.log("Read error: " + e.target.error);
     }

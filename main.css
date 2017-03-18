@@ -28,6 +28,18 @@ body{
     left:0;
 }
 
+#flythroughSlider{
+    position: absolute;
+    width: 30px;
+    right: 0;
+    top: 50%;
+    bottom: 50%;
+    height:150px;
+    padding:0;
+    margin:auto 0;
+    display: none;
+}
+
 #fileSelector, #fileInfo{
     display: none;
 }
@@ -120,6 +132,7 @@ input.form-control {
 
 .flat-slider.ui-slider-vertical {
   width: 6px;
+    height:150px;
 }
 
 .flat-slider .ui-slider-handle {
