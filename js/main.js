@@ -38,6 +38,10 @@ function handleFileSelect(evt) {
     $("#fileInfo").show();
     $("#flythroughSlider").show();
 
+    layerNumber = 0;
+    $("#layerNumber").val(layerNumber);
+    $('#flythroughSlider>div').slider( "value", layerNumber);
+
     readHeader();
     clear();
 }
