@@ -22,6 +22,7 @@ ControlPoint.prototype.getPosition = function(){
 
 ControlPoint.prototype.setPosition = function(position){
     this.mesh.position.set(position.x, position.y, position.z);
+    this.show();
 };
 
 ControlPoint.prototype.setScale = function(){
@@ -43,6 +44,14 @@ ControlPoint.prototype.unhighlight = function(){
 
 ControlPoint.prototype.moveManually = function(position){
     this.mesh.position.set(position.x, position.y, 1);
+};
+
+ControlPoint.prototype.hide = function(){
+    this.mesh.visible = false;
+};
+
+ControlPoint.prototype.show = function(){
+    this.mesh.visible = true;
 };
 
 ControlPoint.prototype.destroy = function(){

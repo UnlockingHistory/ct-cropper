@@ -41,6 +41,7 @@ function handleFileSelect(evt) {
     $("#numVerticesInit").val(6);
 
     $("#profileUI").hide();
+    $("#bounds").hide();
 
     readHeader();
 }

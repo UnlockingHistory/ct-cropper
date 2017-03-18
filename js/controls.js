@@ -92,6 +92,24 @@ function initControls(){
         $("#initOptions").hide();
     });
 
+    setInput("#upperBound", upperBound, function(val){
+        if (val>=size[2]) {
+            $("#upperBound").val(size[2]-1);
+            return;
+        }
+        upperBound = val;
+        updateBoundary();
+    }, 0);
+
+    setInput("#lowerBound", lowerBound, function(val){
+        if (val>=size[2]) {
+            $("#lowerBound").val(size[2]-1);
+            return;
+        }
+        lowerBound = val;
+        updateBoundary();
+    }, 0);
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

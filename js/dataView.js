@@ -17,6 +17,9 @@ var draggingCP = null;
 var mouseDown = false;
 var highlightedObj;
 
+var upperBound = 0;
+var lowerBound = 0;
+
 var profiles = [];
 
 function initDataView(){
@@ -47,10 +50,19 @@ function initDataView(){
 function updateBoundary(){
     if (profiles === undefined || profiles.length == 0) return;
     if (controlPoints === undefined || controlPoints.length == 0) return;
+    if (layerNumber < lowerBound || layerNumber>upperBound) {
+        for (var i=0;i<controlPoints.length;i++){
+            controlPoints[i].hide();
+        }
+        boundary.visible = false;
+        threeView.render();
+        return;
+    }
     var interpVertices = getInterpolatedVertices();
     for (var i=0;i<interpVertices.length;i++){
         controlPoints[i].setPosition(interpVertices[i]);
     }
+    boundary.visible = true;
     boundary.geometry.verticesNeedUpdate = true;
 }
 
@@ -100,6 +112,11 @@ function makeBoundaryGeometry(numPoints){
         });
     }
     controlPoints = [];
+
+    upperBound = size[2]-1;
+    $("#upperBound").val(upperBound);
+    lowerBound = 0;
+    $("#lowerBound").val(lowerBound);
 
     var geometry = new THREE.Geometry();
     for (var i=0;i<numPoints;i++){
@@ -152,8 +169,8 @@ function addProfile(){
 
 var template = "" +
     "<b>Profiles:</b><br/>" +
-    "<% _.each(profiles, function(profile){ %>" +
-        "<div class='indent'>" +
+    "<% _.each(profiles, function(profile, index){ %>" +
+        "<div class='indent <% if (index%2 == 0){ %>lightgrey<%}%>'>" +
             "<a href='#' class='deleteProfile' data-layer='<%= profile.layerNumber %>'><span class='red fui-cross'></span></a>" +
             "<a href='#' class='layerSelector' data-layer='<%= profile.layerNumber %>'>" +
                 "Layer <%= profile.layerNumber %>" +
@@ -168,6 +185,7 @@ function renderProfileUI(){
     if (profiles.length == 0){
         $("#initOptions").show();
         $("#profileUI").hide();
+        $("#bounds").hide();
         if (controlPoints){
             _.each(controlPoints, function(cp){
                 cp.destroy();
@@ -181,6 +199,7 @@ function renderProfileUI(){
     }
 
     $("#profileUI").html(compiledTemplate({profiles: profiles})).show();
+    $("#bounds").show();
 
     $(".layerSelector").click(function(e){
         e.preventDefault();
