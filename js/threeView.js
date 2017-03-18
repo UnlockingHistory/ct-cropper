@@ -44,6 +44,9 @@ function ThreeView() {
     }
 
     function onWindowResize() {
+        var $slider = $("#flythroughSlider");
+        $slider.css({top:(window.innerHeight-$slider.innerHeight())/2});
+
         camera.aspect = $threeContainer.innerWidth() / window.innerHeight;
         camera.left = -$threeContainer.innerWidth() / 2;
         camera.right = $threeContainer.innerWidth() / 2;

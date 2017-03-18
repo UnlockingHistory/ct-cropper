@@ -31,6 +31,9 @@ function numberWithCommas(x) {
 
 function initControls(){
 
+    var $slider = $("#flythroughSlider");
+    $slider.css({top:(window.innerHeight-$slider.innerHeight())/2});
+
     setLink("#about", function(){
         $('#aboutModal').modal('show');
     });
@@ -261,7 +264,7 @@ function initControls(){
                     currentZ++;
                     if (currentZ > bounds.max.z) {
                         writer.close();
-                        $("#saveAsModal").modal('close');
+                        $("#saveAsModal").modal('hide');
                         return;
                     }
                     loadData(dataLength*size[0]*size[1]);//get next chunk
