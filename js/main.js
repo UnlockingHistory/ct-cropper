@@ -12,16 +12,18 @@ var allDataTypes = {
 var currentFileName = null;
 var currentFileSize = 0;
 var currentFile = null;
-var dataType = "int16";
+var dataType = "int8";
 var dataLength = allDataTypes[dataType];
-var headerLength = 200;
+var headerLength = 512;
+
+var threeView;
 
 
 var layerNumber = 0;
 var size = [0,0,0];
 
 var reader = new FileReader();
-// reader.onload = chunkRead;
+reader.onload = chunkRead;
 
 function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
@@ -31,18 +33,16 @@ function handleFileSelect(evt) {
     currentFileSize = currentFile.size;
 
     $("#currentFileName").html(currentFileName);
-    $("#currentFileSize").html(currentFileSize);
+    $("#currentFileSize").html(numberWithCommas(currentFileSize));
     $("#fileInfo").show();
 
     readHeader();
-
-    layerNumber = 0;
-    $("#layerNumber").val(layerNumber);
 }
 
 function chunkRead(e){
     if (e.target.error == null) {
-        console.log(e.target);
+        var data = new Int8Array(e.target.result);
+        showData(data);
     } else {
         console.log("Read error: " + e.target.error);
     }
@@ -50,7 +50,7 @@ function chunkRead(e){
 
 function readHeader(){
     reader.onload = parseHeader;
-    readChunk(0, 3);
+    readChunk(0, 6);
 }
 
 function parseHeader(e){
@@ -63,6 +63,9 @@ function parseHeader(e){
         return;
     }
     reader.onload = chunkRead;
+
+    layerNumber = 0;
+    $("#layerNumber").val(layerNumber).trigger("change");
 }
 
 function readChunk(start, numPixels){
@@ -74,6 +77,8 @@ function readChunk(start, numPixels){
 
 $(document).ready(function(){
 
+    threeView = ThreeView();
+    initDataView();
     initControls();
 
     // Check for the various File API support.

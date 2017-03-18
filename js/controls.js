@@ -9,6 +9,10 @@ function showSize(){
     $("#sizeZ").val(size[2]);
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function initControls(){
 
     setLink("#about", function(){
@@ -21,8 +25,8 @@ function initControls(){
     });
 
     function getLayer(){
-        var offset = size[0]*size[1]*layerNumber + headerLength;
-        readChunk(offset, 512);
+        var offset = (size[0]*size[1]*layerNumber + headerLength)*dataLength;
+        readChunk(offset, size[0]*size[1]*dataLength);
     }
 
     setInput("#layerNumber", layerNumber, function(val){

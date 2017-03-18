@@ -12,22 +12,26 @@
     <script type="text/javascript" src="dependencies/jquery-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/flat-ui.min.js"></script>
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>
+    <script type="text/javascript" src="dependencies/three.min.js"></script>
+    <script type="text/javascript" src="dependencies/OrbitControls.js"></script>
 
     <link rel="stylesheet" type="text/css" href="main.css">
 
+    <script type="text/javascript" src="js/threeView.js"></script>
+    <script type="text/javascript" src="js/dataView.js"></script>
     <script type="text/javascript" src="js/controls.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 
 </head>
 <body>
-
+<div id="threeContainer"></div>
 <input type="file" id="fileSelector"/>
 <div id="controlsLeft">
     <a href="#" id="about" class="btn btn-lg btn-default">About</a><br/><br/>
     <a href="#" id="upload" class="btn btn-lg btn-success">Select File</a><br/><br/>
     <div id="fileInfo">
         <b>Name:</b>&nbsp;&nbsp; <span id="currentFileName"></span><br/>
-        <b>Length:</b>&nbsp;&nbsp; <span id="currentFileSize"></span><br/><br/>
+        <b>Length:</b>&nbsp;&nbsp; <span id="currentFileSize"></span> bytes<br/><br/>
         <b>Size (XYZ):</b>&nbsp;&nbsp; <input id="sizeX" value="" placeholder="" class="form-control int" type="text">
             &nbsp; <input id="sizeY" value="" placeholder="" class="form-control int" type="text">
             &nbsp; <input id="sizeZ" value="" placeholder="" class="form-control int" type="text"><br/><br/>
