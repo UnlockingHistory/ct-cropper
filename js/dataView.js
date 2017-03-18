@@ -45,6 +45,7 @@ function initDataView(){
 }
 
 function updateBoundary(){
+    if (profiles === undefined || profiles.length == 0) return;
     if (controlPoints === undefined || controlPoints.length == 0) return;
     var interpVertices = getInterpolatedVertices();
     for (var i=0;i<interpVertices.length;i++){
@@ -91,9 +92,15 @@ function makeBoundaryGeometry(numPoints){
     if (isNaN(numPoints)) numPoints = 6;
     if (numPoints <= 0) numPoints = 6;
     vertices = [];
-    controlPoints = [];
     cpMeshes = [];
     profiles = [];
+    if (controlPoints){
+        _.each(controlPoints, function(cp){
+            cp.destroy();
+        });
+    }
+    controlPoints = [];
+
     var geometry = new THREE.Geometry();
     for (var i=0;i<numPoints;i++){
         var theta = i*Math.PI*2/numPoints;
@@ -147,7 +154,10 @@ var template = "" +
     "<b>Profiles:</b><br/>" +
     "<% _.each(profiles, function(profile){ %>" +
         "<div class='indent'>" +
-            "<a href='#' class='layerSelector' data-layer='<%= profile.layerNumber %>'>Layer <%= profile.layerNumber %></a>" +
+            "<a href='#' class='deleteProfile' data-layer='<%= profile.layerNumber %>'><span class='red fui-cross'></span></a>" +
+            "<a href='#' class='layerSelector' data-layer='<%= profile.layerNumber %>'>" +
+                "Layer <%= profile.layerNumber %>" +
+            "</a>" +
         "</div>" +
     "<% }); %>";
 
@@ -155,21 +165,58 @@ var compiledTemplate = _.template(template);
 
 function renderProfileUI(){
 
+    if (profiles.length == 0){
+        $("#initOptions").show();
+        $("#profileUI").hide();
+        if (controlPoints){
+            _.each(controlPoints, function(cp){
+                cp.destroy();
+            });
+        }
+        controlPoints = [];
+        threeView.scene.remove(boundary);
+        boundary = undefined;
+        threeView.render();
+        return;
+    }
+
     $("#profileUI").html(compiledTemplate({profiles: profiles})).show();
 
     $(".layerSelector").click(function(e){
         e.preventDefault();
-        var _layerNumber = $(e.target).data("layer");
-        if (_layerNumber === undefined) return;
-        _layerNumber = parseInt(_layerNumber);
-        if (isNaN(_layerNumber)) return;
-        if (_layerNumber >= size[2]) return;
-        if (_layerNumber < 0) return;
+        var _layerNumber = getLayerNumberFromJquery($(e.target));
+        if (_layerNumber === null) return;
         layerNumber = _layerNumber;
         $("#layerNumber").val(layerNumber);
         $('#flythroughSlider>div').slider( "value", layerNumber);
         getLayer();
     });
+
+    $(".deleteProfile").click(function(e){
+        e.preventDefault();
+        var $target = $(e.target);
+        if ($target.hasClass("red")) $target = $target.parent();
+        var _layerNumber = getLayerNumberFromJquery($target);
+        if (_layerNumber === null) return;
+        for (var i=0;i<profiles.length;i++){
+            if (profiles[i].layerNumber == _layerNumber){
+                profiles.splice(i, 1);
+                renderProfileUI();
+                updateBoundary();
+                return;
+            }
+        }
+    });
+}
+
+function getLayerNumberFromJquery($target){
+    var _layerNumber = $target.data("layer");
+    if (_layerNumber === undefined) return null;
+    _layerNumber = parseInt(_layerNumber);
+    if (isNaN(_layerNumber)) return null;
+    if (_layerNumber >= size[2]) return null;
+    if (_layerNumber < 0) return null;
+    return _layerNumber;
 }
 
 function updateControlPoints(){
