@@ -16,7 +16,6 @@ function changeSize(dontUpdateInputs){
 
 function getLayer(){
     if (reader.readyState == 1) return;//busy
-    console.log("get");
     var offset = size[0]*size[1]*layerNumber*dataLength + headerLength;
     var length = size[0]*size[1]*dataLength;
     if ((offset + length) > currentFileSize){
@@ -68,6 +67,22 @@ function initControls(){
     setSlider("#flythroughSlider>div", layerNumber, 0, size[2]-1, 1, function(val){
         layerNumber = val;
         $("#layerNumber").val(val);
+        getLayer();
+    });
+
+    setLink("#layerUp", function(){
+        if (layerNumber >= size[2]-1) return;
+        layerNumber++;
+        $("#layerNumber").val(layerNumber);
+        $('#flythroughSlider>div').slider( "value", layerNumber);
+        getLayer();
+    });
+
+    setLink("#layerDown", function(){
+        if (layerNumber <= 0) return;
+        layerNumber--;
+        $("#layerNumber").val(layerNumber);
+        $('#flythroughSlider>div').slider( "value", layerNumber);
         getLayer();
     });
 

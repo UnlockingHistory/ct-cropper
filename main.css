@@ -34,10 +34,17 @@ body{
     right: 0;
     top: 50%;
     bottom: 50%;
-    height:150px;
+    height:180px;
     padding:0;
     margin:auto 0;
     display: none;
+    text-align: center;
+}
+
+[class^=fui-], [class*=fui-]{
+        width: 100%;
+    display: inline-block;
+    color: black;
 }
 
 #fileSelector, #fileInfo{
