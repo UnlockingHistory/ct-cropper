@@ -315,7 +315,7 @@ function checkForIntersections(e, objects){
     return _highlightedObj;
 }
 
-function getDimensions(){
+function getBounds(){
     var minX = size[0];
     var maxX = 0;
     var minY = size[1];
@@ -344,5 +344,10 @@ function getDimensions(){
     if (maxX<=minX) return null;
     if (maxY<=minY) return null;
 
-    return [maxX-minX+1, maxY-minY+1, maxZ-minZ+1];
+    return {min:new THREE.Vector3(minX, minY, minZ), max:new THREE.Vector3(maxX, maxY, maxZ)};
+}
+
+function getDimensions(){
+    var bounds = getBounds();
+    return [bounds.max.x-bounds.min.x+1, bounds.max.y-bounds.min.y+1, bounds.max.z-bounds.min.z+1];
 }

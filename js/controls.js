@@ -2,7 +2,6 @@
  * Created by ghassaei on 10/7/16.
  */
 
-
 function changeSize(dontUpdateInputs){
     if (dontUpdateInputs === undefined){
         $("#sizeX").val(size[0]);
@@ -143,8 +142,70 @@ function initControls(){
         if (isNaN(fillVal)) return;
         fillVal = parseInt(fillVal);
 
+        var dimensions = getDimensions();
+        if (dimensions === null){
+            console.warn("bad dimensions");
+            return;
+        }
+        var filesize = dimensions[0]*dimensions[1]*dimensions[2]*dataLength+headerLength;
 
+        var bounds = getBounds();
 
+        const fileStream = streamSaver.createWriteStream(filename, 101*size[0]*size[1]*dataLength+headerLength);
+        const writer = fileStream.getWriter();
+
+        var currentOffset = 0;
+        var currentZ = 100;
+
+        var saveReader = new FileReader();
+
+        function loadData(length){
+            var blob = currentFile.slice(currentOffset, length+currentOffset);
+            currentOffset += length;
+            saveReader.readAsArrayBuffer(blob);
+        }
+
+        function updateAndSaveHeader(e){
+            if (e.target.error == null) {
+                var headerData = new Uint8Array(e.target.result);
+                headerData[1] = size[0] >> 8;
+                headerData[0] = size[0] & 255;
+                headerData[3] = size[1] >> 8;
+                headerData[2] = size[1] & 255;
+                headerData[5] = 101 >> 8;
+                headerData[4] = 101 & 255;
+                writer.write(headerData);
+                saveBinData();
+            } else {
+                console.log("Read error: " + e.target.error);
+                writer.abort("read error");
+            }
+        }
+
+        //header
+        saveReader.onload = updateAndSaveHeader;
+        loadData(512);
+        currentOffset += 100*size[0]*size[1]*dataLength;
+
+        function saveBinData(){
+            saveReader.onload = function(e){
+                if (e.target.error == null) {
+                    var allLayerData = new Uint8Array(e.target.result);
+                    writer.write(allLayerData);
+                    currentZ ++;
+                    if (currentZ > 200) {
+                        writer.close();
+                        return;
+                    }
+                    loadData(dataLength*size[0]*size[1]);//get next chunk
+                } else {
+                    console.log("Read error: " + e.target.error);
+                    writer.abort("read error");
+                }
+            };
+
+            loadData(dataLength*size[0]*size[1]);
+        }
     });
 
     function setButtonGroup(id, callback){
