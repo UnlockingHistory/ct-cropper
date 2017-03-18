@@ -86,6 +86,11 @@ function initControls(){
         getLayer();
     });
 
+    setLink("#start", function(){
+        makeBoundaryGeometry($("#numVerticesInit").val());
+        $("#initOptions").hide();
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();

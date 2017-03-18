@@ -37,6 +37,8 @@ function handleFileSelect(evt) {
     $("#currentFileSize").html(numberWithCommas(currentFileSize));
     $("#fileInfo").show();
     $("#flythroughSlider").show();
+    $("#initOptions").show();
+    $("#numVerticesInit").val(6);
 
     readHeader();
 }

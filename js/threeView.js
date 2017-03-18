@@ -60,6 +60,7 @@ function ThreeView() {
         render: render,
         scene: scene,
         renderer: renderer,
-        camera: camera
+        camera: camera,
+        controls: controls
     }
 }
