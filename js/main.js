@@ -41,7 +41,7 @@ function handleFileSelect(evt) {
 
 function chunkRead(e){
     if (e.target.error == null) {
-        var data = new Int8Array(e.target.result);
+        var data = new Uint8Array(e.target.result);
         showData(data);
     } else {
         console.log("Read error: " + e.target.error);

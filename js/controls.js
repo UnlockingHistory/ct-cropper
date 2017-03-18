@@ -7,6 +7,7 @@ function showSize(){
     $("#sizeX").val(size[0]);
     $("#sizeY").val(size[1]);
     $("#sizeZ").val(size[2]);
+    plane.scale.set(size[0]/100, size[1]/100, 1);
 }
 
 function numberWithCommas(x) {
