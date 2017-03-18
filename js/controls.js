@@ -3,11 +3,25 @@
  */
 
 
-function showSize(){
-    $("#sizeX").val(size[0]);
-    $("#sizeY").val(size[1]);
-    $("#sizeZ").val(size[2]);
+function changeSize(dontUpdateInputs){
+    if (dontUpdateInputs === undefined){
+        $("#sizeX").val(size[0]);
+        $("#sizeY").val(size[1]);
+        $("#sizeZ").val(size[2]);
+    }
     plane.scale.set(size[0]/100, size[1]/100, 1);
+    getLayer();
+}
+
+function getLayer(){
+    console.log("get");
+    var offset = (size[0]*size[1]*layerNumber + headerLength)*dataLength;
+    var length = size[0]*size[1]*dataLength;
+    if ((offset + length) >= currentFileSize){
+        console.warn("bad dimensions");
+        return;
+    }
+    readChunk(offset, length);
 }
 
 function numberWithCommas(x) {
@@ -25,11 +39,6 @@ function initControls(){
         $(e.target).blur();
     });
 
-    function getLayer(){
-        var offset = (size[0]*size[1]*layerNumber + headerLength)*dataLength;
-        readChunk(offset, size[0]*size[1]*dataLength);
-    }
-
     setInput("#layerNumber", layerNumber, function(val){
         layerNumber = val;
         getLayer();
@@ -39,6 +48,19 @@ function initControls(){
         headerLength = val;
         getLayer();
     }, 0);
+
+    setInput("#sizeX", size[0], function(val){
+        size[0] = val;
+        changeSize(true);
+    }, 1);
+    setInput("#sizeY", size[1], function(val){
+        size[1] = val;
+        changeSize(true);
+    }, 1);
+    setInput("#sizeZ", size[2], function(val){
+        size[2] = val;
+        changeSize(true);
+    }, 1);
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){

@@ -20,7 +20,7 @@ var threeView;
 
 
 var layerNumber = 0;
-var size = [0,0,0];
+var size = [1,1,1];
 
 var reader = new FileReader();
 reader.onload = chunkRead;
@@ -57,15 +57,13 @@ function parseHeader(e){
     if (e.target.error == null) {
         var data = new Int16Array(e.target.result);
         size = [data[0], data[1], data[2]];
-        showSize();
+        layerNumber = 0;
+        $("#layerNumber").val(layerNumber);
+        reader.onload = chunkRead;
+        changeSize();
     } else {
         console.log("Read error: " + e.target.error);
-        return;
     }
-    reader.onload = chunkRead;
-
-    layerNumber = 0;
-    $("#layerNumber").val(layerNumber).trigger("change");
 }
 
 function readChunk(start, numPixels){
