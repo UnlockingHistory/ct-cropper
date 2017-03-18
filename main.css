@@ -44,7 +44,7 @@ body{
 [class^=fui-], [class*=fui-]{
         width: 100%;
     display: inline-block;
-    color: black;
+    /*color: black;*/
 }
 
 #fileSelector, #fileInfo{
@@ -149,6 +149,10 @@ input.form-control {
   border-radius: 50%;
   border: none;
   cursor: pointer;
+}
+
+.flat-slider.ui-slider-vertical .ui-slider-handle{
+    background: #8cbaed;
 }
 
 .flat-slider.ui-slider-horizontal .ui-slider-handle {
