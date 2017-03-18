@@ -197,7 +197,9 @@ function initControls(){
                     var i = 0;
                     for (var y=bounds.min.y;y<=bounds.max.y;y++){
                         for (var x=bounds.min.x;x<=bounds.max.x;x++){
-                            croppedLayerData[i] = allLayerData[y*size[0]+x];
+                            var val = allLayerData[y*size[0]+x];
+                            if (val === undefined) val = fillVal;
+                            croppedLayerData[i] = val;
                             i++;
                         }
                     }

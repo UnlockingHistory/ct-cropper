@@ -336,6 +336,11 @@ function getBounds(){
         }
     }
 
+    minX += size[0]/2;
+    minY += size[1]/2;
+    maxX += size[0]/2;
+    maxY += size[1]/2;
+
     minX = Math.floor(minX);
     maxX = Math.ceil(maxX);
     minY = Math.floor(minY);
@@ -344,7 +349,7 @@ function getBounds(){
     if (maxX<=minX) return null;
     if (maxY<=minY) return null;
 
-    return {min:new THREE.Vector3(minX, minY, minZ), max:new THREE.Vector3(maxX, maxY, maxZ)};
+    return {min:new THREE.Vector3(minX, minY, minZ), max:new THREE.Vector3(maxX-1, maxY-1, maxZ)};
 }
 
 function getDimensions(){
