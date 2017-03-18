@@ -187,6 +187,25 @@ function initControls(){
         loadData(headerLength);
         currentOffset += currentZ*size[0]*size[1]*dataLength;
 
+        var polyAreas = [];
+        var polyVertices = [];
+
+        function insideTri(area, p0, p1, p2, x, y){
+            var s = 1/(2*area)*(p0.y*p2.x - p0.x*p2.y + (p2.y - p0.y)*x + (p0.x - p2.x)*y);
+            var t = 1/(2*area)*(p0.x*p1.y - p0.y*p1.x + (p0.y - p1.y)*x + (p1.x - p0.x)*y);
+            if (s<=0) return false;
+            if (t<=0) return false;
+            return 1-s-t>0;
+        }
+
+        function insidePoly(x, y){
+            for (var i=0;i<polyVertices.length;i++){
+                var ps = polyVertices[i];
+                if (insideTri(polyAreas[i], ps[0], ps[1], ps[2], x, y)) return true;
+            }
+            return false;
+        }
+
         function saveBinData(){
             saveReader.onload = function(e){
                 if (e.target.error == null) {
@@ -195,11 +214,45 @@ function initControls(){
                     //crop to bounds
                     var croppedLayerData = new Uint8Array(dimensions[0]*dimensions[1]);
                     var i = 0;
+
+                    var interpvertices = getInterpolatedVertices(currentZ);
+                    polyVertices = [];
+                    polyAreas = [];
+
+                    var vertexOffset = new THREE.Vector3(size[0]/2, size[1]/2, 0);
+                    for (var k=0;k<(Math.floor(interpvertices.length/2)-1);k++){
+                        var p0, p1, p2;
+                        p0 = interpvertices[k].clone().add(vertexOffset);
+                        p1 = interpvertices[k+1].clone().add(vertexOffset);
+                        p2 = interpvertices[interpvertices.length-1-k].clone().add(vertexOffset);
+                        polyVertices.push([p0, p1, p2]);
+                        polyAreas.push(0.5 *(-p1.y*p2.x + p0.y*(-p1.x + p2.x) + p0.x*(p1.y - p2.y) + p1.x*p2.y));
+                        p0 = interpvertices[k+1].clone().add(vertexOffset);
+                        p1 = interpvertices[interpvertices.length-2-k].clone().add(vertexOffset);
+                        p2 = interpvertices[interpvertices.length-1-k].clone().add(vertexOffset);
+                        polyVertices.push([p0, p1, p2]);
+                        polyAreas.push(0.5 *(-p1.y*p2.x + p0.y*(-p1.x + p2.x) + p0.x*(p1.y - p2.y) + p1.x*p2.y));
+                    }
+                    if (interpvertices.length%2){
+                        var half = Math.floor(interpvertices.length/2);
+                        var p0 = interpvertices[half-1].clone().add(vertexOffset);
+                        var p1 = interpvertices[half].clone().add(vertexOffset);
+                        var p2 = interpvertices[half+1].clone().add(vertexOffset);
+                        polyVertices.push([p0, p1, p2]);
+                        polyAreas.push(0.5 *(-p1.y*p2.x + p0.y*(-p1.x + p2.x) + p0.x*(p1.y - p2.y) + p1.x*p2.y));
+                    }
+
                     for (var y=bounds.min.y;y<=bounds.max.y;y++){
                         for (var x=bounds.min.x;x<=bounds.max.x;x++){
-                            var val = allLayerData[y*size[0]+x];
-                            if (val === undefined) val = fillVal;
-                            croppedLayerData[i] = val;
+
+                            //check if inside/outside bounds
+                            if (insidePoly(x+0.5, y+0.5)){
+                                var val = allLayerData[y*size[0]+x];
+                                if (val === undefined) val = fillVal;
+                                croppedLayerData[i] = val;
+                            } else {
+                                croppedLayerData[i] = fillVal;
+                            }
                             i++;
                         }
                     }

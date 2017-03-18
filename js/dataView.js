@@ -58,7 +58,7 @@ function updateBoundary(){
         threeView.render();
         return;
     }
-    var interpVertices = getInterpolatedVertices();
+    var interpVertices = getInterpolatedVertices(layerNumber);
     for (var i=0;i<interpVertices.length;i++){
         controlPoints[i].setPosition(interpVertices[i]);
     }
@@ -66,14 +66,14 @@ function updateBoundary(){
     boundary.geometry.verticesNeedUpdate = true;
 }
 
-function getInterpolatedVertices(){
+function getInterpolatedVertices(num){
     var lowerProfile = null;
     var upperProfile = null;
     for (var i=0;i<profiles.length;i++){
-        if (layerNumber == profiles[i].layerNumber) return profiles[i].vertices;
-        if (layerNumber<profiles[i].layerNumber){
+        if (num == profiles[i].layerNumber) return profiles[i].vertices;
+        if (num<profiles[i].layerNumber){
             upperProfile = profiles[i];
-            if (profiles.length>i+1 && profiles[i+1].layerNumber<layerNumber) lowerProfile = profiles[i+1];
+            if (profiles.length>i+1 && profiles[i+1].layerNumber<num) lowerProfile = profiles[i+1];
         }
     }
 
@@ -81,7 +81,7 @@ function getInterpolatedVertices(){
     if (!lowerProfile) return upperProfile.vertices;
 
     var interp = [];
-    var t = (layerNumber - lowerProfile.layerNumber)/(upperProfile.layerNumber-lowerProfile.layerNumber);
+    var t = (num - lowerProfile.layerNumber)/(upperProfile.layerNumber-lowerProfile.layerNumber);
     for (var i=0;i<lowerProfile.vertices.length;i++){
         interp.push((lowerProfile.vertices[i].clone().multiplyScalar(1-t)).add(upperProfile.vertices[i].clone().multiplyScalar(t)));
     }
