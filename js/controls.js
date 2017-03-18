@@ -3,6 +3,12 @@
  */
 
 
+function showSize(){
+    $("#sizeX").val(size[0]);
+    $("#sizeY").val(size[1]);
+    $("#sizeZ").val(size[2]);
+}
+
 function initControls(){
 
     setLink("#about", function(){
@@ -14,8 +20,19 @@ function initControls(){
         $(e.target).blur();
     });
 
-    setInput("#layerNumber", layerNumber, function(val){
+    function getLayer(){
+        var offset = size[0]*size[1]*layerNumber + headerLength;
+        readChunk(offset, 512);
+    }
 
+    setInput("#layerNumber", layerNumber, function(val){
+        layerNumber = val;
+        getLayer();
+    }, 0);
+
+    setInput("#headerLength", headerLength, function(val){
+        headerLength = val;
+        getLayer();
     }, 0);
 
     function setButtonGroup(id, callback){

@@ -14,12 +14,14 @@ var currentFileSize = 0;
 var currentFile = null;
 var dataType = "int16";
 var dataLength = allDataTypes[dataType];
-var headerSize = 0;
+var headerLength = 200;
+
 
 var layerNumber = 0;
+var size = [0,0,0];
 
 var reader = new FileReader();
-reader.onload = chunkRead;
+// reader.onload = chunkRead;
 
 function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
@@ -32,7 +34,10 @@ function handleFileSelect(evt) {
     $("#currentFileSize").html(currentFileSize);
     $("#fileInfo").show();
 
-    readChunk(0, 200);
+    readHeader();
+
+    layerNumber = 0;
+    $("#layerNumber").val(layerNumber);
 }
 
 function chunkRead(e){
@@ -43,11 +48,28 @@ function chunkRead(e){
     }
 }
 
+function readHeader(){
+    reader.onload = parseHeader;
+    readChunk(0, 3);
+}
+
+function parseHeader(e){
+    if (e.target.error == null) {
+        var data = new Int16Array(e.target.result);
+        size = [data[0], data[1], data[2]];
+        showSize();
+    } else {
+        console.log("Read error: " + e.target.error);
+        return;
+    }
+    reader.onload = chunkRead;
+}
+
 function readChunk(start, numPixels){
     if (!currentFile) return;
     var length = dataLength*numPixels;
     var blob = currentFile.slice(start, length+start);
-    reader.readAsText(blob);
+    reader.readAsArrayBuffer(blob);
 }
 
 $(document).ready(function(){
