@@ -19,9 +19,9 @@ function ThreeView() {
         renderer.setSize($threeContainer.innerWidth(), $threeContainer.innerHeight());
         $threeContainer.append(renderer.domElement);
 
-        camera.zoom = 20;
+        camera.zoom = 0.3;
         camera.updateProjectionMatrix();
-        camera.position.z = 40;
+        camera.position.z = 400;
         camera.up.set( 0, 0, 1 );
         camera.lookAt(new THREE.Vector3(0,0,0));
 

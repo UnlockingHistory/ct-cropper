@@ -121,7 +121,7 @@ function makeBoundaryGeometry(numPoints){
     var geometry = new THREE.Geometry();
     for (var i=0;i<numPoints;i++){
         var theta = i*Math.PI*2/numPoints;
-        var cp = new ControlPoint(new THREE.Vector3(Math.cos(theta), Math.sin(theta), 1));
+        var cp = new ControlPoint(new THREE.Vector3(100*Math.cos(theta), 100*Math.sin(theta), 1));
         vertices.push(cp.getPosition());
         controlPoints.push(cp);
         cpMeshes.push(cp.getMesh());
@@ -186,6 +186,7 @@ function renderProfileUI(){
         $("#initOptions").show();
         $("#profileUI").hide();
         $("#bounds").hide();
+        $("#save").hide();
         if (controlPoints){
             _.each(controlPoints, function(cp){
                 cp.destroy();
@@ -200,6 +201,7 @@ function renderProfileUI(){
 
     $("#profileUI").html(compiledTemplate({profiles: profiles})).show();
     $("#bounds").show();
+    $("#save").show();
 
     $(".layerSelector").click(function(e){
         e.preventDefault();
@@ -222,6 +224,7 @@ function renderProfileUI(){
                 profiles.splice(i, 1);
                 renderProfileUI();
                 updateBoundary();
+                threeView.render();
                 return;
             }
         }
@@ -310,4 +313,36 @@ function checkForIntersections(e, objects){
         });
     }
     return _highlightedObj;
+}
+
+function getDimensions(){
+    var minX = size[0];
+    var maxX = 0;
+    var minY = size[1];
+    var maxY = 0;
+    var minZ = lowerBound;
+    var maxZ = upperBound;
+
+    if (maxZ<=minZ) return null;
+
+    for (var i=0;i<profiles.length;i++){
+        var profile = profiles[i];
+        for (var j=0;j<profile.vertices.length;j++){
+            var vertex = profile.vertices[j];
+            if (vertex.x<minX) minX = vertex.x;
+            if (vertex.y<minY) minY = vertex.y;
+            if (vertex.x>maxX) maxX = vertex.x;
+            if (vertex.y>maxY) maxY = vertex.y;
+        }
+    }
+
+    minX = Math.floor(minX);
+    maxX = Math.ceil(maxX);
+    minY = Math.floor(minY);
+    maxY = Math.ceil(maxY);
+
+    if (maxX<=minX) return null;
+    if (maxY<=minY) return null;
+
+    return [maxX-minX+1, maxY-minY+1, maxZ-minZ+1];
 }

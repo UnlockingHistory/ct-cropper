@@ -49,6 +49,10 @@ body{
     color:red;
 }
 
+#saveAsFileName{
+    width: 400px;
+}
+
 #profileUI>div{
     background: rgba(240,240,240,0.4);
 }

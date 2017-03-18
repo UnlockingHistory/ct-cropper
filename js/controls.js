@@ -10,7 +10,7 @@ function changeSize(dontUpdateInputs){
         $("#sizeZ").val(size[2]);
     }
     $('#flythroughSlider>div').slider( "option", "max", size[2]-1);
-    plane.scale.set(size[0]/100, size[1]/100, 1);
+    plane.scale.set(size[0], size[1], 1);
     getLayer();
 }
 
@@ -109,6 +109,43 @@ function initControls(){
         lowerBound = val;
         updateBoundary();
     }, 0);
+
+    setLink("#save", function(){
+        var $saveAsModal = $('#saveAsModal');
+        var $saveAsFilename = $("#saveAsFileName");
+        var filename = currentFileName.split(".")[0];
+        filename += "_";
+        var dimensions = getDimensions();
+        if (dimensions === null){
+            console.warn("bad dimensions");
+            return;
+        }
+        var dimensionsTxt = dimensions.join("x");
+        filename += dimensionsTxt;
+        filename += ".tom";
+        $saveAsFilename.val(filename);
+        $("#outputFileDimensions").html(dimensionsTxt);
+        $("#fillVal").val(0);
+        var filesize = dimensions[0]*dimensions[1]*dimensions[2]*dataLength+headerLength;
+        $("#outputFileSize").html(numberWithCommas(filesize));
+        $saveAsModal.modal('show');
+        $saveAsModal.on('shown.bs.modal', function() {
+            $saveAsFilename.focus();
+            $saveAsFilename.select();
+        });
+    });
+
+    setLink("#saveAsTOMModal", function(){
+
+        var filename = $("#saveAsFileName").val();
+        var fillVal = $("#fillVal").val();
+        fillVal = parseFloat(fillVal);
+        if (isNaN(fillVal)) return;
+        fillVal = parseInt(fillVal);
+
+
+
+    });
 
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){

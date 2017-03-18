@@ -42,6 +42,7 @@ function handleFileSelect(evt) {
 
     $("#profileUI").hide();
     $("#bounds").hide();
+    $("#save").hide();
 
     readHeader();
 }

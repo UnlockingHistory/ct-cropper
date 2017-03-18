@@ -14,6 +14,7 @@
     <script type="text/javascript" src="dependencies/underscore-min.js"></script>
     <script type="text/javascript" src="dependencies/three.min.js"></script>
     <script type="text/javascript" src="dependencies/OrbitControls.js"></script>
+    <script type="text/javascript" src="dependencies/FileSaver.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="main.css">
 
@@ -46,6 +47,7 @@
             <b>Upper Bound:</b>&nbsp;&nbsp; <input id="upperBound" value="" placeholder="" class="form-control int" type="text"><br/><br/>
             <b>Lower Bound:</b>&nbsp;&nbsp; <input id="lowerBound" value="" placeholder="" class="form-control int" type="text"><br/><br/>
         </div>
+        <a href="#" id="save" class="btn btn-lg btn-block btn-success">Save Cropped .tom As...</a><br/><br/>
         <div class="extraSpace"></div>
     </div>
 </div>
@@ -53,6 +55,40 @@
     <a href="#" id="layerUp"><span class="fui-triangle-up"></span></a>
     <span class="label-slider"></span><div class="flat-slider ui-slider ui-corner-all ui-slider-vertical ui-widget ui-widget-content"></div>
     <a href="#" id="layerDown"><span class="fui-triangle-down"></span></a>
+</div>
+
+<div class="modal fade" id="saveAsModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <p class="modal-title" ><b>Save As (.tom)</b></p>
+            </div>
+            <div class="modal-body">
+                <b>Name:</b> &nbsp;&nbsp;<input id="saveAsFileName" type="text" placeholder="Enter file name" class="form-control filename"><br/><br/>
+                <b>File Dimensions (XYZ):</b> <span id="outputFileDimensions"></span>&nbsp;px<br/><br/>
+                <b>File Size:</b> <span id="outputFileSize"></span>&nbsp;bytes<br/><br/>
+                <b>Fill empty regions with:</b> &nbsp;&nbsp;<input id="fillVal" type="text" placeholder="" class="form-control"><br/><br/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="saveAsTOMModal" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog modal-med">
+        <div class="modal-content">
+            <div class="modal-body">
+                <b>CTCropper</b><br/><br/>
+                Tool for cropping arbitrary profiles from CT volumetric data.  Currently supports .tom
+                file format.  More documentation coming soon.<br/><br/>
+                By <a href="http://www.amandaghassaei.com/" target="_blank">Amanda Ghassaei</a>.
+                <br/><br/>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
