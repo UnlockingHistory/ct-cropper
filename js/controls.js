@@ -151,11 +151,11 @@ function initControls(){
 
         var bounds = getBounds();
 
-        const fileStream = streamSaver.createWriteStream(filename, 101*size[0]*size[1]*dataLength+headerLength);
+        const fileStream = streamSaver.createWriteStream(filename, filesize);
         const writer = fileStream.getWriter();
 
         var currentOffset = 0;
-        var currentZ = 100;
+        var currentZ = bounds.min.z;
 
         var saveReader = new FileReader();
 
@@ -168,12 +168,12 @@ function initControls(){
         function updateAndSaveHeader(e){
             if (e.target.error == null) {
                 var headerData = new Uint8Array(e.target.result);
-                headerData[1] = size[0] >> 8;
-                headerData[0] = size[0] & 255;
-                headerData[3] = size[1] >> 8;
-                headerData[2] = size[1] & 255;
-                headerData[5] = 101 >> 8;
-                headerData[4] = 101 & 255;
+                headerData[1] = dimensions[0] >> 8;
+                headerData[0] = dimensions[0] & 255;
+                headerData[3] = dimensions[1] >> 8;
+                headerData[2] = dimensions[1] & 255;
+                headerData[5] = dimensions[2] >> 8;
+                headerData[4] = dimensions[2] & 255;
                 writer.write(headerData);
                 saveBinData();
             } else {
@@ -184,16 +184,27 @@ function initControls(){
 
         //header
         saveReader.onload = updateAndSaveHeader;
-        loadData(512);
-        currentOffset += 100*size[0]*size[1]*dataLength;
+        loadData(headerLength);
+        currentOffset += currentZ*size[0]*size[1]*dataLength;
 
         function saveBinData(){
             saveReader.onload = function(e){
                 if (e.target.error == null) {
                     var allLayerData = new Uint8Array(e.target.result);
-                    writer.write(allLayerData);
-                    currentZ ++;
-                    if (currentZ > 200) {
+
+                    //crop to bounds
+                    var croppedLayerData = new Uint8Array(dimensions[0]*dimensions[1]);
+                    var i = 0;
+                    for (var y=bounds.min.y;y<=bounds.max.y;y++){
+                        for (var x=bounds.min.x;x<=bounds.max.x;x++){
+                            croppedLayerData[i] = allLayerData[y*size[0]+x];
+                            i++;
+                        }
+                    }
+
+                    writer.write(croppedLayerData);
+                    currentZ++;
+                    if (currentZ > bounds.max.z) {
                         writer.close();
                         return;
                     }
