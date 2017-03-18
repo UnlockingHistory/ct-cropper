@@ -17,6 +17,8 @@ var draggingCP = null;
 var mouseDown = false;
 var highlightedObj;
 
+var profiles = [];
+
 function initDataView(){
     var planeGeo = new THREE.PlaneBufferGeometry(1, 1);
     var planeMat = new THREE.MeshBasicMaterial({color:0xffffff});
@@ -42,6 +44,37 @@ function initDataView(){
     document.addEventListener( 'mousemove', mouseMove, false );
 }
 
+function updateBoundary(){
+    if (controlPoints === undefined || controlPoints.length == 0) return;
+    var interpVertices = getInterpolatedVertices();
+    for (var i=0;i<interpVertices.length;i++){
+        controlPoints[i].setPosition(interpVertices[i]);
+    }
+    boundary.geometry.verticesNeedUpdate = true;
+}
+
+function getInterpolatedVertices(){
+    var lowerProfile = null;
+    var upperProfile = null;
+    for (var i=0;i<profiles.length;i++){
+        if (layerNumber == profiles[i].layerNumber) return profiles[i].vertices;
+        if (layerNumber<profiles[i].layerNumber){
+            upperProfile = profiles[i];
+            if (profiles.length>i+1 && profiles[i+1].layerNumber<layerNumber) lowerProfile = profiles[i+1];
+        }
+    }
+
+    if (!upperProfile) return profiles[0].vertices;
+    if (!lowerProfile) return upperProfile.vertices;
+
+    var interp = [];
+    var t = (layerNumber - lowerProfile.layerNumber)/(upperProfile.layerNumber-lowerProfile.layerNumber);
+    for (var i=0;i<lowerProfile.vertices.length;i++){
+        interp.push((lowerProfile.vertices[i].clone().multiplyScalar(1-t)).add(upperProfile.vertices[i].clone().multiplyScalar(t)));
+    }
+    return interp;
+}
+
 function showData(data) {
     var dataTex = new THREE.DataTexture(data, size[0], size[1], THREE.LuminanceFormat, THREE.UnsignedByteType);
     dataTex.magFilter = THREE.NearestFilter; // also check out THREE.LinearFilter just to see the results
@@ -49,6 +82,7 @@ function showData(data) {
     plane.material.map = dataTex;
     plane.material.needsUpdate = true;
     plane.visible = true;
+    updateBoundary();
     threeView.render();
 }
 
@@ -59,6 +93,7 @@ function makeBoundaryGeometry(numPoints){
     vertices = [];
     controlPoints = [];
     cpMeshes = [];
+    profiles = [];
     var geometry = new THREE.Geometry();
     for (var i=0;i<numPoints;i++){
         var theta = i*Math.PI*2/numPoints;
@@ -68,6 +103,9 @@ function makeBoundaryGeometry(numPoints){
         cpMeshes.push(cp.getMesh());
     }
     vertices.push(vertices[0]);
+
+    addProfile();
+
     geometry.vertices = vertices;
     geometry.dynamic = true;
     var material = new THREE.LineBasicMaterial({
@@ -76,6 +114,62 @@ function makeBoundaryGeometry(numPoints){
     boundary = new THREE.Line(geometry, material);
     threeView.scene.add(boundary);
     threeView.render();
+}
+
+function addProfile(){
+    //check if profile already exists for this layer
+    var index = null;
+    for (var i=0;i<profiles.length;i++){
+        if (profiles[i].layerNumber == layerNumber) {
+            index = i;
+            break;
+        }
+    }
+
+    var profileVertices = [];
+    for (var i=0;i<controlPoints.length;i++){
+        profileVertices.push(controlPoints[i].getPosition().clone());
+    }
+    var profile = {
+        layerNumber: layerNumber,
+        vertices: profileVertices
+    };
+    if (index !== null) profiles[index] = profile;
+    else {
+        profiles.push(profile);
+        profiles = _.sortBy(profiles, function(profile){ return -profile.layerNumber; });
+    }
+
+    renderProfileUI();
+}
+
+var template = "" +
+    "<b>Profiles:</b><br/>" +
+    "<% _.each(profiles, function(profile){ %>" +
+        "<div class='indent'>" +
+            "<a href='#' class='layerSelector' data-layer='<%= profile.layerNumber %>'>Layer <%= profile.layerNumber %></a>" +
+        "</div>" +
+    "<% }); %>";
+
+var compiledTemplate = _.template(template);
+
+function renderProfileUI(){
+
+    $("#profileUI").html(compiledTemplate({profiles: profiles})).show();
+
+    $(".layerSelector").click(function(e){
+        e.preventDefault();
+        var _layerNumber = $(e.target).data("layer");
+        if (_layerNumber === undefined) return;
+        _layerNumber = parseInt(_layerNumber);
+        if (isNaN(_layerNumber)) return;
+        if (_layerNumber >= size[2]) return;
+        if (_layerNumber < 0) return;
+        layerNumber = _layerNumber;
+        $("#layerNumber").val(layerNumber);
+        $('#flythroughSlider>div').slider( "value", layerNumber);
+        getLayer();
+    });
 }
 
 function updateControlPoints(){
@@ -109,6 +203,7 @@ function mouseMove(e){
         }
         var intersection = getIntersectionWithObjectPlane(highlightedObj.getPosition().clone());
         highlightedObj.moveManually(intersection);
+        addProfile();
         boundary.geometry.verticesNeedUpdate = true;
         threeView.render();
     }

@@ -43,6 +43,7 @@ function initControls(){
 
     setInput("#layerNumber", layerNumber, function(val){
         layerNumber = val;
+        $('#flythroughSlider>div').slider( "value", layerNumber);
         getLayer();
     }, 0);
 

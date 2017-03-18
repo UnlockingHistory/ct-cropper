@@ -47,7 +47,7 @@ body{
     /*color: black;*/
 }
 
-#fileSelector, #fileInfo{
+#fileSelector, #fileInfo, #profileUI{
     display: none;
 }
 
@@ -91,7 +91,7 @@ a.btn:visited, a.btn:focus{
 }
 
 input.form-control {
-    width: 90px;
+    width: 80px;
     display: inline-block;
 }
 

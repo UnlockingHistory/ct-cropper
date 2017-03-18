@@ -20,6 +20,10 @@ ControlPoint.prototype.getPosition = function(){
     return this.mesh.position;
 };
 
+ControlPoint.prototype.setPosition = function(position){
+    this.mesh.position.set(position.x, position.y, position.z);
+};
+
 ControlPoint.prototype.setScale = function(){
     var scale = 5/threeView.camera.zoom;
     this.mesh.scale.set(scale, scale, scale);

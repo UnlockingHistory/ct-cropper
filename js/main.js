@@ -40,6 +40,8 @@ function handleFileSelect(evt) {
     $("#initOptions").show();
     $("#numVerticesInit").val(6);
 
+    $("#profileUI").hide();
+
     readHeader();
 }
 
