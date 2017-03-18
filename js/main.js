@@ -37,14 +37,9 @@ function handleFileSelect(evt) {
     $("#currentFileSize").html(numberWithCommas(currentFileSize));
     $("#fileInfo").show();
     $("#flythroughSlider").show();
-    $("#initOptions").show();
-    $("#numVerticesInit").val(6);
-
-    $("#profileUI").hide();
-    $("#bounds").hide();
-    $("#save").hide();
 
     readHeader();
+    clear();
 }
 
 function chunkRead(e){

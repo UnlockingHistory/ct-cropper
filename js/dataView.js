@@ -99,10 +99,12 @@ function showData(data) {
     threeView.render();
 }
 
-function makeBoundaryGeometry(numPoints){
-    numPoints = parseInt(numPoints);
-    if (isNaN(numPoints)) numPoints = 6;
-    if (numPoints <= 0) numPoints = 6;
+function clear(){
+    $("#initOptions").show();
+    $("#profileUI").hide();
+    $("#bounds").hide();
+    $("#save").hide();
+    $("#numVerticesInit").val(6);
     vertices = [];
     cpMeshes = [];
     profiles = [];
@@ -117,6 +119,20 @@ function makeBoundaryGeometry(numPoints){
     $("#upperBound").val(upperBound);
     lowerBound = 0;
     $("#lowerBound").val(lowerBound);
+
+    if (boundary){
+        threeView.scene.remove(boundary);
+        boundary = undefined;
+    }
+    threeView.render();
+}
+
+function makeBoundaryGeometry(numPoints){
+    numPoints = parseInt(numPoints);
+    if (isNaN(numPoints)) numPoints = 6;
+    if (numPoints <= 0) numPoints = 6;
+
+    clear();
 
     var geometry = new THREE.Geometry();
     for (var i=0;i<numPoints;i++){
@@ -183,19 +199,7 @@ var compiledTemplate = _.template(template);
 function renderProfileUI(){
 
     if (profiles.length == 0){
-        $("#initOptions").show();
-        $("#profileUI").hide();
-        $("#bounds").hide();
-        $("#save").hide();
-        if (controlPoints){
-            _.each(controlPoints, function(cp){
-                cp.destroy();
-            });
-        }
-        controlPoints = [];
-        threeView.scene.remove(boundary);
-        boundary = undefined;
-        threeView.render();
+        clear();
         return;
     }
 

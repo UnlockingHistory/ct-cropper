@@ -261,6 +261,7 @@ function initControls(){
                     currentZ++;
                     if (currentZ > bounds.max.z) {
                         writer.close();
+                        $("#saveAsModal").modal('close');
                         return;
                     }
                     loadData(dataLength*size[0]*size[1]);//get next chunk
