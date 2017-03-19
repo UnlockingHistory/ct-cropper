@@ -17,7 +17,7 @@
 		}
 	}
 
-	streamSaver.mitm = 'https://rawgit.com/amandaghassaei/CTCropper/master/dependencies/mitm.html?version=' +
+	streamSaver.mitm = 'https://rawgit.com/amandaghassaei/CTCropper/fc8393bad21f9c5dad80c27c2f3af15b85ce8cfe/dependencies/mitm.html?version=' +
 		streamSaver.version.full
 
 	try {
