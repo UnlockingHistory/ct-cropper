@@ -64,6 +64,7 @@ function updateBoundary(){
     }
     boundary.visible = true;
     boundary.geometry.verticesNeedUpdate = true;
+    boundary.geometry.computeBoundingSphere();
 }
 
 function getInterpolatedVertices(num){
@@ -278,6 +279,7 @@ function mouseMove(e){
         highlightedObj.moveManually(intersection);
         addProfile();
         boundary.geometry.verticesNeedUpdate = true;
+        boundary.geometry.computeBoundingSphere();
         threeView.render();
     }
 }
