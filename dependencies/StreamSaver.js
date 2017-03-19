@@ -17,7 +17,7 @@
 		}
 	}
 
-	streamSaver.mitm = 'https://jimmywarting.github.io/StreamSaver.js/mitm.html?version=' +
+	streamSaver.mitm = 'https://raw.githubusercontent.com/amandaghassaei/CTCropper/master/dependencies/mitm.html?version=' +
 		streamSaver.version.full
 
 	try {
