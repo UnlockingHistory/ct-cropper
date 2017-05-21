@@ -22,6 +22,7 @@ var threeView;
 var layerNumber = 0;
 var lastLayerRequested = 0;
 var size = [1,1,1];
+var currentData = null;
 
 var reader = new FileReader();
 reader.onload = chunkRead;
@@ -50,6 +51,7 @@ function chunkRead(e){
     if (e.target.error == null) {
         var data = new Uint8Array(e.target.result);
         showData(data);
+        currentData = data;
         if (lastLayerRequested != layerNumber) getLayer();
     } else {
         console.log("Read error: " + e.target.error);

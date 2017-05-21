@@ -278,6 +278,28 @@ function initControls(){
         }
     });
 
+    setLink("#savePNG", function(){
+        var filename = currentFileName.split(".")[0];
+        filename += "_layer_" + layerNumber + ".png";
+        var canvas = document.createElement('canvas');
+        canvas.width = size[0];
+        canvas.height = size[1];
+        var ctx = canvas.getContext("2d");
+        var imageData = ctx.createImageData(size[0], size[1]);
+        for(var i = 0; i < currentData.length; i++) {
+            var val = currentData[i];
+            imageData.data[4*i] = val;
+            imageData.data[4*i+1] = val;
+            imageData.data[4*i+2] = val;
+            imageData.data[4*i+3] = 255;
+        }
+        ctx.putImageData(imageData,0,0);
+        canvas.toBlob(function(blob) {
+            saveAs(blob, filename);
+        });
+        canvas.remove();
+    });
+
     function setButtonGroup(id, callback){
         $(id+" a").click(function(e){
             e.preventDefault();
