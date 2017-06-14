@@ -323,9 +323,9 @@ function checkForIntersections(e, objects){
 
 function getBounds(){
     var minX = size[0];
-    var maxX = 0;
+    var maxX = -size[0];
     var minY = size[1];
-    var maxY = 0;
+    var maxY = -size[1];
     var minZ = lowerBound;
     var maxZ = upperBound;
 
