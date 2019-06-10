@@ -145,6 +145,8 @@ function initControls(){
         if (isNaN(fillVal)) return;
         fillVal = parseInt(fillVal);
 
+        console.log(getBounds());
+
         var dimensions = getDimensions();
         if (dimensions === null){
             console.warn("bad dimensions");
