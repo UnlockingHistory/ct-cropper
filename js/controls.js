@@ -145,8 +145,6 @@ function initControls(){
         if (isNaN(fillVal)) return;
         fillVal = parseInt(fillVal);
 
-        console.log(getBounds());
-
         var dimensions = getDimensions();
         if (dimensions === null){
             console.warn("bad dimensions");
@@ -155,6 +153,7 @@ function initControls(){
         var filesize = dimensions[0]*dimensions[1]*dimensions[2]*dataLength+headerLength;
 
         var bounds = getBounds();
+        console.log(bounds);
 
         const fileStream = streamSaver.createWriteStream(filename, filesize);
         const writer = fileStream.getWriter();
